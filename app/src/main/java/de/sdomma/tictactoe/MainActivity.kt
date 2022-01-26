@@ -2,14 +2,18 @@ package de.sdomma.tictactoe
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
+import de.sdomma.tictactoe.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     private var myGame = Game()
     private var inputFields: MutableList<ImageView>? = null
@@ -41,25 +45,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
+        val view = binding.root
+        setContentView(view)
 
-        counterOneTV = findViewById(R.id.counter_one)
-        counterTwoTV = findViewById(R.id.counter_two)
-        counterDrawTV = findViewById(R.id.counter_draw)
 
-        currentPlayerTV = findViewById(R.id.current_player_tv)
-        winningMessageTV = findViewById(R.id.winning_message_tv)
-        btnReset = findViewById(R.id.btn_reset)
 
-        val input0: ImageView = findViewById(R.id.input_0)
-        val input1: ImageView = findViewById(R.id.input_1)
-        val input2: ImageView = findViewById(R.id.input_2)
-        val input3: ImageView = findViewById(R.id.input_3)
-        val input4: ImageView = findViewById(R.id.input_4)
-        val input5: ImageView = findViewById(R.id.input_5)
-        val input6: ImageView = findViewById(R.id.input_6)
-        val input7: ImageView = findViewById(R.id.input_7)
-        val input8: ImageView = findViewById(R.id.input_8)
+        counterOneTV = binding.counterOne
+        counterTwoTV = binding.counterTwo
+        counterDrawTV = binding.counterDraw
+
+        currentPlayerTV = binding.currentPlayerTv
+        winningMessageTV = binding.winningMessageTv
+        btnReset = binding.btnReset
+
+        val input0: ImageView = binding.input0
+        val input1: ImageView = binding.input1
+        val input2: ImageView = binding.input2
+        val input3: ImageView = binding.input3
+        val input4: ImageView = binding.input4
+        val input5: ImageView = binding.input5
+        val input6: ImageView = binding.input6
+        val input7: ImageView = binding.input7
+        val input8: ImageView = binding.input8
 
         inputFields = mutableListOf(
             input0, input1, input2, input3, input4, input5, input6, input7, input8

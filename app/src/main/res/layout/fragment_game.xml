@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:paddingHorizontal="15dp"
     android:paddingVertical="20dp"
-    tools:context=".activities.MainActivity">
+    tools:context=".activities.MainActivity"
+    android:id="@+id/game_container">
 
     <LinearLayout
         android:id="@+id/stats"

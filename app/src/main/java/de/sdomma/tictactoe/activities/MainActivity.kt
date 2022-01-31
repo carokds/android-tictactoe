@@ -1,17 +1,18 @@
-package de.sdomma.tictactoe
+package de.sdomma.tictactoe.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.isVisible
+import de.sdomma.tictactoe.Game
+import de.sdomma.tictactoe.GameStatus
+import de.sdomma.tictactoe.Player
+import de.sdomma.tictactoe.R
 import de.sdomma.tictactoe.databinding.ActivityMainBinding
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 

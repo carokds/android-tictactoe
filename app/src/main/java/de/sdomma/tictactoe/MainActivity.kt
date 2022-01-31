@@ -2,6 +2,7 @@ package de.sdomma.tictactoe
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -10,8 +11,17 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import de.sdomma.tictactoe.databinding.ActivityMainBinding
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val PLAYER_ONE_COUNTER_KEY = "playerOneCounterKey"
+        const val PLAYER_TWO_COUNTER_KEY = "playerTwoCounterKey"
+        const val DRAW_COUNTER_KEY = "drawCounterKey"
+        const val BOARD_KEY = "boardKey"
+        const val CURRENT_PLAYER_KEY = "currentPlayer"
+    }
 
     private lateinit var binding: ActivityMainBinding
 
@@ -50,27 +60,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
 
-
         counterOneTV = binding.counterOne
         counterTwoTV = binding.counterTwo
         counterDrawTV = binding.counterDraw
-
-        currentPlayerTV = binding.currentPlayerTv
         winningMessageTV = binding.winningMessageTv
-        btnReset = binding.btnReset
 
-        val input0: ImageView = binding.input0
-        val input1: ImageView = binding.input1
-        val input2: ImageView = binding.input2
-        val input3: ImageView = binding.input3
-        val input4: ImageView = binding.input4
-        val input5: ImageView = binding.input5
-        val input6: ImageView = binding.input6
-        val input7: ImageView = binding.input7
-        val input8: ImageView = binding.input8
 
         inputFields = mutableListOf(
-            input0, input1, input2, input3, input4, input5, input6, input7, input8
+            binding.input0,
+            binding.input1,
+            binding.input2,
+            binding.input3,
+            binding.input4,
+            binding.input5,
+            binding.input6,
+            binding.input7,
+            binding.input8
         ).apply {
             this.forEachIndexed { index, iv ->
                 iv.setOnClickListener {
@@ -80,47 +85,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        currentPlayerTV.text = "Your turn Player ${myGame.currentPlayer}"
+        binding.currentPlayerTv.text = "Your turn Player ${myGame.currentPlayer}"
 
-        btnReset.setOnClickListener {
+        binding.btnReset.setOnClickListener {
             resetGame()
         }
 
-        /*input0.setOnClickListener {
-            dothething(winningMessageTV, currentPlayerTV, input0, 0, 0)
-        }
-
-        input1.setOnClickListener {
-            dothething(winningMessageTV, currentPlayerTV, input1, 0, 1)
-        }
-
-        input2.setOnClickListener {
-            dothething(winningMessageTV, currentPlayerTV, input2, 0, 2)
-        }
-
-        input3.setOnClickListener {
-            dothething(winningMessageTV, currentPlayerTV, input3, 1, 0)
-        }
-
-        input4.setOnClickListener {
-            dothething(winningMessageTV, currentPlayerTV, input4, 1, 1)
-        }
-
-        input5.setOnClickListener {
-            dothething(winningMessageTV, currentPlayerTV, input5, 1, 2)
-        }
-
-        input6.setOnClickListener {
-            dothething(winningMessageTV, currentPlayerTV, input6, 2, 0)
-        }
-
-        input7.setOnClickListener {
-            dothething(winningMessageTV, currentPlayerTV, input7, 2, 1)
-        }
-
-        input8.setOnClickListener {
-            dothething(winningMessageTV, currentPlayerTV, input8, 2, 2)
-        }*/
     }
 
     private fun dothething(
@@ -153,7 +123,7 @@ class MainActivity : AppCompatActivity() {
             myGame.checkBoard(myGame.board)
 
             if (myGame.gameStatus == GameStatus.WON) {
-                winningMessageTV.apply {
+                binding.winningMessageTv.apply {
                     text = "You Won Player ${myGame.currentPlayer}"
                     visibility = View.VISIBLE
                 }
@@ -168,7 +138,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (myGame.gameStatus == GameStatus.DRAW) {
-                winningMessageTV.apply {
+                binding.winningMessageTv.apply {
                     text = "Draw"
                     visibility = View.VISIBLE
                 }
@@ -188,16 +158,58 @@ class MainActivity : AppCompatActivity() {
 //            }
 
             // Solution 4 - 5
-            btnReset.visibility = if (myGame.gameStatus != GameStatus.RUNNING) View.VISIBLE else View.INVISIBLE
+            binding.btnReset.visibility =
+                if (myGame.gameStatus != GameStatus.RUNNING) View.VISIBLE else View.INVISIBLE
 
             // Solution 5 - 3
 //            btnReset.isVisible = myGame.gameStatus != GameStatus.RUNNING
 
             // Switch Player
             myGame.switchPlayer()
-            currentPlayerTV.text = "Your turn Player ${myGame.currentPlayer}"
+            binding.currentPlayerTv.text = "Your turn Player ${myGame.currentPlayer}"
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putInt(PLAYER_ONE_COUNTER_KEY, counterOne)
+        outState.putInt(PLAYER_TWO_COUNTER_KEY, counterTwo)
+        outState.putInt(DRAW_COUNTER_KEY, counterDraw)
+
+        outState.putSerializable(BOARD_KEY, myGame.board)
+        outState.putSerializable(CURRENT_PLAYER_KEY, myGame.currentPlayer)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        counterOne = savedInstanceState.getInt(PLAYER_ONE_COUNTER_KEY)
+        counterTwo = savedInstanceState.getInt(PLAYER_TWO_COUNTER_KEY)
+        counterDraw = savedInstanceState.getInt(DRAW_COUNTER_KEY)
+        myGame.board = savedInstanceState.getSerializable(BOARD_KEY) as Array<Array<Player?>>
+        myGame.currentPlayer = savedInstanceState.getSerializable(CURRENT_PLAYER_KEY) as Player
+        restoreBoard()
+
+    }
+
+    private fun restoreBoard() {
+        myGame.board.flatten().forEachIndexed { position, player ->
+
+            if (player == Player.ONE) {
+                // Set icon for player one
+                inputFields?.get(position)?.let {
+                    it.setImageResource(R.drawable.ic_player_one)
+                }
+            } else if (player == Player.TWO) {
+                // Set icon for player two
+                inputFields?.get(position)?.let {
+                    it.setImageResource(R.drawable.ic_player_two)
+                }
+            }
+        }
+    }
+
 
     private fun resetGame() {
         inputFields?.forEach {
@@ -206,9 +218,12 @@ class MainActivity : AppCompatActivity() {
 
         myGame = Game()
 
-        btnReset.visibility = View.INVISIBLE
-        winningMessageTV.visibility = View.INVISIBLE
+        binding.btnReset.visibility = View.INVISIBLE
+        binding.winningMessageTv.visibility = View.INVISIBLE
 
-        currentPlayerTV.text = "Your turn Player ${myGame.currentPlayer}"
+        binding.currentPlayerTv.text = "Your turn Player ${myGame.currentPlayer}"
     }
+
+
 }
+
